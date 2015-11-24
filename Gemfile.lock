@@ -1,0 +1,13 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    combinatorics (0.4.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  combinatorics
+
+BUNDLED WITH
+   1.10.6
