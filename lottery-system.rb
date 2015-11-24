@@ -85,12 +85,14 @@ end
 puts
 puts "E se nos colocassemos cada numero na sua propria coluna?"
 STDIN.gets
+i = 0
 indices.map do |comb|
   comb2 = Array.new(possible_ng, '  ')
   comb.each do |c|
     comb2[c] = c.to_s.rjust(2)
   end
-  p comb2
+  print "#{i.to_s.rjust(2)}: #{comb2.inspect}\n"
+  i += 1
 end
 
 
