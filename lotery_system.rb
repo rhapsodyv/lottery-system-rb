@@ -1,3 +1,24 @@
+
+# Arruma um bug na lib Combinatorics que por algum motivo louco retorna C(x, 0) = 0, mas é 1!!
+module Combinatorics
+  module Choose
+    def self.C(n, r)
+      # tratamento de numeros negativos que tbm nao tem na lib
+      return 0 if n < 0 || r < 0 || n < r
+      #puts "C(#{n}, #{r})"
+      # otimizacao do calculo de combinacao simples:
+      #   da pra simplificar parte do calculo cortando o fatorial de n-r em baixo e em cima
+      #
+      # n*(n-1)*(n-2)*..//(n-r)!//
+      # +----------------------+
+      #       r!*//(n-r)!//
+      #
+      #Math.factorial(n) / (Math.factorial(r) * Math.factorial(n - r))
+      Math.pi((n-r+1)..n) / Math.factorial(r)
+    end
+  end
+end
+
 class LoterySystem
   attr_reader :n, :k, :g
   attr_reader :possible_nk, :possible_ng, :possible_kg

@@ -50,5 +50,4 @@ lotery_system.print_indices_nk
 puts "\n\n"
 puts "Agora vem a loucura e a beleza da matematica... E se eu te disser que essa tabela acima eh formada por outros sistemas de loterias??"
 STDIN.gets
-
 lotery_system.print_indices_nk_with_formation
