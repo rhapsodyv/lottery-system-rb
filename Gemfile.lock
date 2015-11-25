@@ -1,12 +1,14 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    colorize (0.7.7)
     combinatorics (0.4.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  colorize
   combinatorics
 
 BUNDLED WITH
