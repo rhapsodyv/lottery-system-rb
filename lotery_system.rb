@@ -41,7 +41,7 @@ class LoterySystem
     gen_all_indices_nk
   end
 
-  def print_indices_nk
+  def print_indices_nk(color = nil)
     i = 0
 
     @all_indices_nk.map do |comb|
@@ -52,7 +52,7 @@ class LoterySystem
 
       print "#{i.to_s.rjust(2)}: ["
       comb2.each_with_index do |c, idx|
-        print c
+        print c.colorize(color)
       end
       print "]\n"
       #print "#{i.to_s.rjust(2)}: #{comb2.inspect}\n"
@@ -89,8 +89,11 @@ class LoterySystem
     end
 
     puts "Esquerda: #{left.n} #{left.k} #{left.g}"
+    left.print_indices_nk(:green)
     puts "Direita : #{right.n} #{right.k} #{right.g}"
+    right.print_indices_nk(:red)
     puts "Em baixo: #{bottom.n} #{bottom.k} #{bottom.g}"
+    bottom.print_indices_nk(:blue)
   end
 
   def gen_all_indices_nk
