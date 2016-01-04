@@ -35,6 +35,9 @@ puts
 puts "Mas cada cartao de #{k} numeros gera #{lotery_system.possible_kg} combinacoes possiveis de #{g} numeros"
 puts "Vamos ver como sao essas combinacoes..."
 STDIN.gets
+puts "Olhando o primeiro cartao: "
+p lotery_system.combs_nk.first
+puts "Ele gera as seguintes combinacoes de #{g} em #{g}:"
 indices = lotery_system.combs_kg.map do |comb|
   idx = lotery_system.comb_index(n, g, comb.clone)
   print "#{comb.inspect} => indice: #{idx}\n"
