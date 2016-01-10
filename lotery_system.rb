@@ -1,4 +1,4 @@
-
+require 'combinatorics/choose'
 # Arruma um bug na lib Combinatorics que por algum motivo louco retorna C(x, 0) = 0, mas é 1!!
 module Combinatorics
   module Choose
@@ -18,6 +18,8 @@ module Combinatorics
     end
   end
 end
+
+$debug_formula = false
 
 class LoterySystem
   attr_reader :n, :k, :g
@@ -110,28 +112,49 @@ class LoterySystem
     end
   end
 
+  #       3                   2                 1
+  # Soma C(n - 1, p - 1) + C(n - 2, p - 1) + C(n - 3, p - 1) + ... + C(n - k, p - 1) até que x seja 0
+  # Ou seja:
+  # E C(n - i, p)
+  # i=0 ate x
   def sum_col(n, k, x)
-    return 0 if n == 0 || k == 0 || x == 0
-    c = Combinatorics::Choose.C(n - 1, k - 1)
+    print "\t\tSumCol(n: #{n}, p: #{k}, elemento: #{x})" if $debug_formula
+    if x < 0
+      puts " = 0"  if $debug_formula
+      return 0
+    else
+      puts ""  if $debug_formula
+    end
+    c = Combinatorics::Choose.C(n - x, k)
+    puts "\t\t\tC(#{n - x}, #{k}) = #{c}" if $debug_formula
     # esse caco nao ta calculando C direito... enfim
     c = 1 if c == 0
-    return c + sum_col(n - 1, k, x - 1)
+    return c + sum_col(n, k, x - 1)
   end
 
   def comb_index2(n, k, comb, l)
+    puts "\tCombIndex2(n: #{n}, p: #{k}, seq: #{comb}, element_anterior: #{l})" if $debug_formula
     return 0 if comb.size == 0
     x = comb.shift
-    x2 = x - l - 1
-    n2 = n - x2 - 1
-    k2 = k - 1
-    s = sum_col(n, k, x2)
-    return s + comb_index2(n2, k2, comb, x)
+    x2 = x - l
+    n2 = n - x2
+    s = sum_col(n - 1, k, x2 - 2)
+    sum = s + comb_index2(n2, k - 1, comb, x)
+    sum
   end
 
   # Isso aqui eh meio magico e só traduzi de haskell pra ruby..
   # O que ele faz eh pegar uma combinacao e procurar o indice dela numa tabela de combinacoes
   def comb_index(n, k, comb)
-    return comb_index2(n, k, comb, -1)
+    puts "CombIndex(n: #{n}, p: #{k}, seq: #{comb})" if $debug_formula
+    idx = comb_index2(n, k - 1, comb, -1)
+    puts "Index: #{idx}" if $debug_formula
+    idx
+  end
+
+  def test_comb_index
+    result = self.combs_nk.map{|comb| self.comb_index(self.n, self.k, comb.clone) } == [*(0..self.possible_nk-1)]
+    result
   end
 
   def print_comb(comb)
