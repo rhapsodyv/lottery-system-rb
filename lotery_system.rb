@@ -119,16 +119,17 @@ class LoterySystem
   # i=0 ate x
   def sum_col(n, k, x)
     print "\t\tSumCol(n: #{n}, p: #{k}, elemento: #{x})" if $debug_formula
-    if x < 0
+    if x == 0
       puts " = 0"  if $debug_formula
       return 0
     else
       puts ""  if $debug_formula
     end
-    c = Combinatorics::Choose.C(n - x, k)
-    puts "\t\t\tC(#{n - x}, #{k}) = #{c}" if $debug_formula
+    c = Combinatorics::Choose.C(n, k)
+    puts "\t\t\tC(#{n}, #{k}) = #{c}" if $debug_formula
     # esse caco nao ta calculando C direito... enfim
     c = 1 if c == 0
+    n -= 1
     return c + sum_col(n, k, x - 1)
   end
 
@@ -140,17 +141,27 @@ class LoterySystem
     # pega o elemento atual e remove ele de comb
     current_element = comb.shift
 
-    # ?? diferenca entre os dois elementos indica quantas colunas nos subimos no triangulo de pascal ??
+    # diferenca entre os dois elementos indica quantas colunas nos subimos no triangulo de pascal
     diff_cur_last_element = current_element - last_element
 
-    # ??
+    puts "\tcurrent_element: #{current_element}, diff_cur_last_element: #{diff_cur_last_element}" if $debug_formula
+
+    # indica o novo N do sub-conjunto
     new_n = n - diff_cur_last_element
 
-    # ??
+    # indica o novo K do sub-conjunto
     new_k = k - 1
 
-    # ??
-    s = sum_col(n, k, diff_cur_last_element - 2)
+    # realiza a soma dessa coluna
+    # ele vai somar: C(n, k) + C(n - 1, k) + C(n-x, k)
+    # -1 porque só quero somar o conjunto aberto dos binomios, ou seja, sem incluir o binomio do elemento atual.
+    # por exemplo:
+    #  diff será sempre maior que 1:
+    #  se diff = 1, então é uma sequencia normal: 2,3, logo nao preciso somar nada (1 - 1 = 0)
+    #  se diff = 2, então é uma sequencia pulando 1: 2,4, logo preciso somar uma vez (2 - 1 = 1)
+    #  se diff = 3, então é uma sequencia pulando 2: 2,5, logo preciso somar duas vezes (3 - 1 = 2)
+    #  etc...
+    s = sum_col(n, k, diff_cur_last_element - 1)
 
     # soma recursivamente
     sum = s + comb_index2(new_n, new_k, comb, current_element)
