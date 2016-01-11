@@ -132,14 +132,28 @@ class LoterySystem
     return c + sum_col(n, k, x - 1)
   end
 
-  def comb_index2(n, k, comb, l)
-    puts "\tCombIndex2(n: #{n}, p: #{k}, seq: #{comb}, element_anterior: #{l})" if $debug_formula
+  # Esse metodo faz a magica de descobrir qual é o binomio para iniciar a soma da proxima coluna
+  def comb_index2(n, k, comb, last_element)
+    puts "\tCombIndex2(n: #{n}, p: #{k}, seq: #{comb}, element_anterior: #{last_element})" if $debug_formula
     return 0 if comb.size == 0
-    x = comb.shift
-    x2 = x - l
-    n2 = n - x2
-    s = sum_col(n - 1, k, x2 - 2)
-    sum = s + comb_index2(n2, k - 1, comb, x)
+
+    # pega o elemento atual e remove ele de comb
+    current_element = comb.shift
+
+    # ?? diferenca entre os dois elementos indica quantas colunas nos subimos no triangulo de pascal ??
+    diff_cur_last_element = current_element - last_element
+
+    # ??
+    new_n = n - diff_cur_last_element
+
+    # ??
+    new_k = k - 1
+
+    # ??
+    s = sum_col(n, k, diff_cur_last_element - 2)
+
+    # soma recursivamente
+    sum = s + comb_index2(new_n, new_k, comb, current_element)
     sum
   end
 
@@ -147,7 +161,8 @@ class LoterySystem
   # O que ele faz eh pegar uma combinacao e procurar o indice dela numa tabela de combinacoes
   def comb_index(n, k, comb)
     puts "CombIndex(n: #{n}, p: #{k}, seq: #{comb})" if $debug_formula
-    idx = comb_index2(n, k - 1, comb, -1)
+    # só chama a funcao comb index recursiva passando primeiro elemento da comb
+    idx = comb_index2(n - 1, k - 1, comb, -1)
     puts "Index: #{idx}" if $debug_formula
     idx
   end
