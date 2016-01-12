@@ -214,14 +214,14 @@ class LoterySystem
   end
 
   # soma binomios até que o total seja o maior valor possivel menor que target.
-  # @return [Array] retorna o total e quantos binomios foram somados
+  # @return [Array] retorna o total menor que target e quantos binomios foram somados
   def binomial_sum_until(n, k, target)
     count = 0
     s = 0
     c = 0
     while s < target
       c = Combinatorics::Choose.C(n, k)
-      puts "\tC(#{n}, #{k}) = #{c}"
+      puts "\tC(#{n}, #{k}) = #{c}"  if $debug_formula
       n -= 1
       s += c
       count += 1
@@ -231,8 +231,12 @@ class LoterySystem
     [s, count]
   end
 
-  def nth_comb2(n, k, idx, last_elment)
-    puts "nth_comb(n: #{n}, p: #{k}, idx: #{idx}, last_elment: #{last_elment})"
+  # @param [Fixnum] n
+  # @param [Fixnum] k
+  # @param [Fixnum] idx Indice comencando em 1 (para facilitar)
+  # @param [Fixnum] last_element
+  def nth_comb2(n, k, idx, last_element)
+    puts "nth_comb(n: #{n}, p: #{k}, idx: #{idx}, last_elment: #{last_element})"  if $debug_formula
     return [] if k < 0 || n < 0
 
     s, count = binomial_sum_until(n, k, idx)
@@ -245,16 +249,24 @@ class LoterySystem
     new_k = k - 1
 
     # elemento é o anterior + quantos binomios a soma "andou"
-    el = last_elment + count
+    el = last_element + count
     [el] + nth_comb2(new_n, new_k, idx, el)
   end
 
+  # @param [Fixnum] n
+  # @param [Fixnum] k
+  # @param [Fixnum] idx Indice comencando em 0
   def nth_comb(n, k, idx)
     nth_comb2(n - 1, k - 1, idx + 1, -1)
   end
 
   def test_comb_index
     result = self.combs_nk.map{|comb| self.comb_index(self.n, self.k, comb.clone) } == [*(0..self.possible_nk-1)]
+    result
+  end
+
+  def test_nth_comb
+    result = !self.combs_nk.each_with_index.map { |comb, idx| nth_comb(self.n, self.k, idx) == comb }.include?(false)
     result
   end
 
