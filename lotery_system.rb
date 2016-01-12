@@ -168,6 +168,41 @@ class LoterySystem
     sum
   end
 
+  def comb_index_binomios(n, k, comb, last_element)
+    puts "\tCombIndex2(n: #{n}, p: #{k}, seq: #{comb}, element_anterior: #{last_element})" if $debug_formula
+    return [] if comb.size == 0
+
+    # pega o elemento atual e remove ele de comb
+    current_element = comb.shift
+
+    # diferenca entre os dois elementos indica quantas colunas nos subimos no triangulo de pascal
+    diff_cur_last_element = current_element - last_element
+
+    puts "\tcurrent_element: #{current_element}, diff_cur_last_element: #{diff_cur_last_element}" if $debug_formula
+
+    # indica o novo N do sub-conjunto
+    new_n = n - diff_cur_last_element
+
+    # indica o novo K do sub-conjunto
+    new_k = k - 1
+
+    # realiza a soma dessa coluna
+    # ele vai somar: C(n, k) + C(n - 1, k) + C(n-x, k)
+    # -1 porque só quero somar o conjunto aberto dos binomios, ou seja, sem incluir o binomio do elemento atual.
+    # por exemplo:
+    #  diff será sempre maior que 1:
+    #  se diff = 1, então é uma sequencia normal: 2,3, logo nao preciso somar nada (1 - 1 = 0)
+    #  se diff = 2, então é uma sequencia pulando 1: 2,4, logo preciso somar uma vez (2 - 1 = 1)
+    #  se diff = 3, então é uma sequencia pulando 2: 2,5, logo preciso somar duas vezes (3 - 1 = 2)
+    #  etc...
+    s = [{n: n, k: k, x: diff_cur_last_element - 1}]
+
+    # soma recursivamente
+    sum = s + comb_index_binomios(new_n, new_k, comb, current_element)
+    sum
+  end
+
+
   # Isso aqui eh meio magico e só traduzi de haskell pra ruby..
   # O que ele faz eh pegar uma combinacao e procurar o indice dela numa tabela de combinacoes
   def comb_index(n, k, comb)
@@ -176,6 +211,34 @@ class LoterySystem
     idx = comb_index2(n - 1, k - 1, comb, -1)
     puts "Index: #{idx}" if $debug_formula
     idx
+  end
+
+  def nth_comb2(n, k, idx, last_elment)
+    puts "nth_comb(n: #{n}, p: #{k}, idx: #{idx}, last_elment: #{last_elment})"
+    return [] if k < 0 || n < 0
+    new_n = n
+    new_k = k - 1
+
+    diff = 0
+    s = 0
+    c = 0
+    while s < idx
+      c = Combinatorics::Choose.C(n, k)
+      puts "\tC(#{n}, #{k}) = #{c}"
+      n -= 1
+      s += c
+      diff += 1
+    end
+
+    s -= c
+    idx -= s
+
+    el = last_elment + diff
+    [el] + nth_comb2(new_n - diff, new_k, idx, el)
+  end
+
+  def nth_comb(n, k, idx)
+    nth_comb2(n - 1, k - 1, idx + 1, -1)
   end
 
   def test_comb_index
