@@ -213,28 +213,40 @@ class LoterySystem
     idx
   end
 
-  def nth_comb2(n, k, idx, last_elment)
-    puts "nth_comb(n: #{n}, p: #{k}, idx: #{idx}, last_elment: #{last_elment})"
-    return [] if k < 0 || n < 0
-    new_n = n
-    new_k = k - 1
-
-    diff = 0
+  # soma binomios até que o total seja o maior valor possivel menor que target.
+  # @return [Array] retorna o total e quantos binomios foram somados
+  def binomial_sum_until(n, k, target)
+    count = 0
     s = 0
     c = 0
-    while s < idx
+    while s < target
       c = Combinatorics::Choose.C(n, k)
       puts "\tC(#{n}, #{k}) = #{c}"
       n -= 1
       s += c
-      diff += 1
+      count += 1
     end
-
     s -= c
+
+    [s, count]
+  end
+
+  def nth_comb2(n, k, idx, last_elment)
+    puts "nth_comb(n: #{n}, p: #{k}, idx: #{idx}, last_elment: #{last_elment})"
+    return [] if k < 0 || n < 0
+
+    s, count = binomial_sum_until(n, k, idx)
     idx -= s
 
-    el = last_elment + diff
-    [el] + nth_comb2(new_n - diff, new_k, idx, el)
+    # novo n, diminuo quantos binomios a soma "andou"
+    new_n = n - count
+
+    # novo k
+    new_k = k - 1
+
+    # elemento é o anterior + quantos binomios a soma "andou"
+    el = last_elment + count
+    [el] + nth_comb2(new_n, new_k, idx, el)
   end
 
   def nth_comb(n, k, idx)
